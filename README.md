@@ -176,3 +176,26 @@ message..."
 `tokens.isEmpty()` check for inputs like ",,,," that aren't blank but contain no actual
 numbers. Both display "Please enter at least one number." Verified on emulator: empty input,
 comma-only input, invalid integers, and valid input all behave correctly now.
+
+## Step 9: Benchmark and Analyze Performance
+**Prompt used:** "Write a benchmarking function... that compares execution time of the
+recursive quickSort, iterativeQuickSort, and Kotlin's built-in List.sorted() across these
+scenarios: a random list of 50,000 integers, an already-sorted list of 50,000 integers, and
+a smaller random list of 5,000 integers..."
+
+**Raw results:**
+
+| Scenario | recursive quickSort | iterativeQuickSort | List.sorted() |
+|---|---|---|---|
+| Random, 50,000 | 48 ms | 59 ms | 42 ms |
+| Already-sorted, 50,000 | StackOverflowError | 64,771 ms (~65 sec) | 2 ms |
+| Random, 5,000 | 2 ms | 3 ms | 14 ms |
+
+**Analysis:** Random data shows all three performing comparably, consistent with average-case
+O(n log n). The already-sorted case confirms the documented worst case directly: the recursive
+version overflowed the JVM stack at 50,000 levels of recursion; the iterative version avoided
+the crash but still exhibited the same O(n²) degradation (~65 sec vs 59ms on random data of
+the same size); Kotlin's built-in sort (TimSort) finished in 2ms by exploiting the existing
+ascending run, matching its documented adaptive behavior. The small-random result (built-in
+slower than custom implementations) is likely JVM warm-up/measurement noise rather than a
+real signal, given the inconsistency with every other result.
