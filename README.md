@@ -199,3 +199,55 @@ the same size); Kotlin's built-in sort (TimSort) finished in 2ms by exploiting t
 ascending run, matching its documented adaptive behavior. The small-random result (built-in
 slower than custom implementations) is likely JVM warm-up/measurement noise rather than a
 real signal, given the inconsistency with every other result.
+
+Step 10: Document the Process
+
+Prompt used: "Based on these benchmark results — random 50,000: recursive 48ms, iterative
+59ms, built-in 42ms; already-sorted 50,000: recursive StackOverflowError, iterative ~65
+seconds, built-in 2ms; random 5,000: recursive 2ms, iterative 3ms, built-in 14ms — write a
+concise 'Key Learnings' section for my lab report explaining why the recursive QuickSort
+overflowed on sorted data, why the iterative version was dramatically slower on sorted versus
+random data, and why Kotlin's built-in sort handled the sorted case so efficiently."
+
+Key Learnings
+
+Recursive QuickSort overflowed on the already-sorted input because of the pivot choice and
+recursion depth. The implementation picks the last element as pivot (Lomuto scheme). On an
+already-sorted array that makes every partition extremely unbalanced (one side of size n−1,
+the other 0), so recursion depth becomes O(n). That triggers a JVM StackOverflowError for
+large n and also yields the algorithm's worst-case time complexity, O(n²).
+
+The iterative QuickSort avoided a stack overflow but was dramatically slower on the sorted
+input for the same reason: it still uses the same pivot/partition strategy, so it performs
+the same O(n²) number of comparisons and swaps. Replacing recursion with an explicit stack
+removes the call-stack limit but does not fix the algorithmic worst case; the quadratic work
+(and additional per-operation overhead from repeated swaps and stack management) explains the
+huge slowdown on the sorted dataset versus the random case.
+
+Kotlin's built-in sort handled the sorted case extremely efficiently because it uses
+TimSort (a merge/insertion hybrid optimized for real-world data). TimSort detects existing
+ordered "runs" and can sort already-sorted or nearly-sorted inputs in close to linear time,
+O(n). That run detection — plus careful merging and small-run insertion sort — lets it beat
+QuickSort variants on such inputs and avoid pathological behavior.
+
+How Copilot Assisted Overall
+
+Across the lab, Copilot Chat generated correct first-pass implementations (recursive
+QuickSort, the iterative variant, the Compose UI, JUnit tests, and the benchmarking harness)
+directly from natural-language prompts, and produced documentation-quality explanations of
+the algorithm's internals on request. It also correctly diagnosed an intentionally introduced
+bug when given only the symptom ("tests are failing"), and made small unprompted
+optimizations such as only pushing 2+-element ranges onto the iterative stack. Not everything
+was hands-off, though: Copilot placed the new composable directly into MainActivity.kt
+rather than the file that was open, and it did not independently catch the empty-input UI edge
+case — that was found through manual testing and fixed afterward with Copilot's help once
+flagged.
+
+Conclusion
+
+This lab confirms QuickSort's textbook complexity profile in practice: strong average-case
+performance competitive with optimized library sorts, but a real and reproducible worst-case
+failure mode (last-element pivot combined with sorted/adversarial input) that a production
+implementation should mitigate via randomized or median-of-three pivot selection. It also
+demonstrates why general-purpose language sort functions (TimSort here) are tuned for
+real-world data patterns rather than purely random-input benchmarks.
