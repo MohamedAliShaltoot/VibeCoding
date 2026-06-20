@@ -15,6 +15,14 @@ original list — it should sort a copy and return that copy, leaving the input 
 Result: Copilot correctly used `arr.toMutableList()` to create a defensive copy before sorting.
 Verified original list stays unmodified.
 
+## Step 3: Code Explanation
+**Prompt used:** "Explain how the quickSort function and the partition function in this file
+work, step by step. Describe the role of the pivot, how the partitioning loop rearranges
+elements, and how the recursive calls eventually sort the full list. Write the explanation
+so it could be used directly as documentation..."
+
+**Explanation (Copilot output, trimmed of planning notes):**
+[paste everything from "What the functions are" through "Summary" here]
 ## Step 6 (early pass): Unit Test
 **Prompt used:** "Write a JUnit test in Kotlin for the quickSort function above. Include one
 test that sorts a small unsorted list and prints the list before and after sorting so I can
