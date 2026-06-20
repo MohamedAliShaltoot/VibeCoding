@@ -15,6 +15,11 @@ original list — it should sort a copy and return that copy, leaving the input 
 Result: Copilot correctly used `arr.toMutableList()` to create a defensive copy before sorting.
 Verified original list stays unmodified.
 
-## Step 6: Unit Test
-**Prompt used:** (fill in after you run it)
-**Result:**
+## Step 6 (early pass): Unit Test
+**Prompt used:** "Write a JUnit test in Kotlin for the quickSort function above. Include one
+test that sorts a small unsorted list and prints the list before and after sorting so I can
+visually confirm it works."
+
+**Result:** Copilot generated a test covering a list with duplicate values, using both println
+for visual confirmation and assertEquals for automated verification. Test passed. Still need to
+add cases for empty list, already-sorted list, and a large dataset to fully satisfy step 6.
